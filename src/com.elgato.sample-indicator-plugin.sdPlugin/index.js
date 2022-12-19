@@ -10,7 +10,7 @@ const cycle = (idx, min, max) => (idx > max ? min : idx < min ? max : idx);
 const sampleIndicatorAction = new Action('com.elgato.sample-indicator.action');
 
 sampleIndicatorAction.onWillAppear(({context, payload}) => {
-    // console.log('will appear', context, payload, device);
+    // console.log('will appear', context, payload);
     MACTIONS[context] = new SampleIndicatorAction(context, payload);
 });
 
