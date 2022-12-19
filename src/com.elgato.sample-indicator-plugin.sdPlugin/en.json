@@ -1,0 +1,12 @@
+{
+	"Description": "Create a sample indicator.", 
+	"Name": "Sample Indicator",
+	"Category": "Samples",
+	"com.elgato.sample-indicator.action": {
+		"Name": "Sample Indicator",
+		"Tooltip": "How to move indicators."
+	},
+	"Localization": {
+		"None": "None"
+	}
+}
