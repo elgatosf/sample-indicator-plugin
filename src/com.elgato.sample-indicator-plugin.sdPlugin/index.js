@@ -25,6 +25,11 @@ sampleIndicatorAction.onTitleParametersDidChange(({context, payload}) => {
     MACTIONS[context].color = payload.titleParameters.titleColor;
 });
 
+sampleIndicatorAction.onKeyUp(({context, payload}) => {
+    // console.log('onKeyUp', context, payload);
+    MACTIONS[context].toggle();
+});
+
 sampleIndicatorAction.onDialPress(({context, payload}) => {
     // console.log('dial was pressed', context, payload);
     if(payload.pressed === false) {
@@ -56,11 +61,12 @@ class SampleIndicatorAction {
             this.width = 100; // default width of the panel is 100
             this.height = 50; // default height of the panel is 50
         } else {
-            this.width = 72; // default width of the icon is 72
-            this.height = 72; // default width of the icon is 72
+            this.width = 144; // default width of the icon is 72
+            this.height = 144; // default width of the icon is 72
         }
         this.numModes = 5;
-        this.iconSize = 48; // default size of the icon is 48
+        this.scale = 2;
+        this.iconSize = 48 * this.scale; // default size of the icon is 48
         this.color = '#EFEFEF';
         this.mode = 0;
         this.init();
@@ -79,7 +85,7 @@ class SampleIndicatorAction {
     }
 
     manualRotate(ticks) {
-        this.mode = this.numModes+1;
+        this.mode = this.numModes + 1;
         if(this.manualValue === -1) {
             this.manualValue = Math.floor(100 / 60 * new Date().getSeconds());
         }
@@ -91,7 +97,7 @@ class SampleIndicatorAction {
     }
 
     update() {
-        if(this.mode === this.numModes+1) return; // last mode is manual mode - see above 'manualRotate'
+        if(this.mode === this.numModes + 1) return; // last mode is manual mode - see above 'manualRotate'
         const indicatorValue = Math.floor(100 / 60 * new Date().getSeconds());
         this.opacity = this.mode === 4 ? 0.5 : 1;
         const svg = this.createIcon();
@@ -129,7 +135,7 @@ class SampleIndicatorAction {
 
     createIcon() {
         const w = this.iconSize;
-        const r = this.iconSize / 2;
+        const r = this.iconSize / (2 * this.scale);
         let fontColor = this.color;
         const modeValues = {
             fill: 'none',
@@ -152,7 +158,7 @@ class SampleIndicatorAction {
         }
         return `
     <svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${w}" viewBox="0 0 ${w} ${w}">
-        <g opacity="${this.opacity}">
+        <g transform="scale(${this.scale})" opacity="${this.opacity}">
             <polygon fill="${modeValues.fill}" stroke-width="${modeValues.strokeWidth}" stroke="${this.color}" points="24 36 9.89315394 43.4164079 12.5873218 27.7082039 1.17464361 16.5835921 16.946577 14.2917961 24 0 31.053423 14.2917961 46.8253564 16.5835921 35.4126782 27.7082039 38.1068461 43.4164079"></polygon>
             <text x="${r}" y="${r + r / 3}" text-anchor="middle" fill="${fontColor}" font-size="${r}">${this.mode}</text>
         </g>
