@@ -65,6 +65,8 @@ class SampleIndicatorAction {
             this.height = 144; // default width of the icon is 72
         }
         this.numModes = 5;
+         // default scale of the icon is 2, which gives sharper icons on Stream Deck's keys
+         // to compare, you can set this value to 1 (or look at the double-indicator-plugin example, which uses scale 1)
         this.scale = 2;
         this.iconSize = 48 * this.scale; // default size of the icon is 48
         this.color = '#EFEFEF';
