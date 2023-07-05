@@ -9,47 +9,60 @@ const cycle = (idx, min, max) => (idx > max ? min : idx < min ? max : idx);
 // Action Events
 const sampleIndicatorAction = new Action('com.elgato.sample-indicator.action');
 
-sampleIndicatorAction.onWillAppear(({context, payload}) => {
+sampleIndicatorAction.onWillAppear(({ context, payload }) => {
     // console.log('will appear', context, payload);
     MACTIONS[context] = new SampleIndicatorAction(context, payload);
 });
 
-sampleIndicatorAction.onWillDisappear(({context}) => {
+sampleIndicatorAction.onWillDisappear(({ context }) => {
     // console.log('will disappear', context);
     MACTIONS[context].interval && clearInterval(MACTIONS[context].interval);
     delete MACTIONS[context];
 });
 
-sampleIndicatorAction.onTitleParametersDidChange(({context, payload}) => {
+sampleIndicatorAction.onTitleParametersDidChange(({ context, payload }) => {
     // console.log('wonTitleParametersDidChange', context, payload);
     MACTIONS[context].color = payload.titleParameters.titleColor;
 });
 
-sampleIndicatorAction.onKeyUp(({context, payload}) => {
+sampleIndicatorAction.onKeyUp(({ context, payload }) => {
     // console.log('onKeyUp', context, payload);
     MACTIONS[context].toggle();
 });
 
-sampleIndicatorAction.onDialPress(({context, payload}) => {
-    // console.log('dial was pressed', context, payload);
-    if(payload.pressed === false) {
-        MACTIONS[context].toggle();
-    }
-});
-
-sampleIndicatorAction.onDialRotate(({context, payload}) => {
+sampleIndicatorAction.onDialRotate(({ context, payload }) => {
     // console.log('dial was rotated', context, payload.ticks);
     if(payload.hasOwnProperty('ticks')) {
         MACTIONS[context].manualRotate(payload.ticks);
     }
 });
 
-sampleIndicatorAction.onTouchTap(({context, payload}) => {
+sampleIndicatorAction.onTouchTap(({ context, payload }) => {
     // console.log('touchpanel was tapped', context, payload);
     if(payload.hold === false) {
         MACTIONS[context].toggle();
     }
 });
+
+
+$SD.onConnected(jsn => {
+    const [version, major] = jsn.appInfo.application.version.split(".").map(e => parseInt(e, 10));
+    const hasDialPress = version == 6 && major < 4;
+    if(hasDialPress) {
+        sampleIndicatorAction.onDialPress(({ context, payload }) => {
+            // console.log('dial was pressed', context, payload);
+            if(payload.pressed === false) {
+                MACTIONS[context].toggle();
+            }
+        });
+    } else {
+        sampleIndicatorAction.onDialUp(({ context, payload }) => {
+            // console.log('onDialUp', context, payload);
+            MACTIONS[context].toggle();
+        });
+    }
+});
+
 
 class SampleIndicatorAction {
     constructor (context, payload) {
@@ -65,8 +78,8 @@ class SampleIndicatorAction {
             this.height = 144; // default width of the icon is 72
         }
         this.numModes = 5;
-         // default scale of the icon is 2, which gives sharper icons on Stream Deck's keys
-         // to compare, you can set this value to 1 (or look at the double-indicator-plugin example, which uses scale 1)
+        // default scale of the icon is 2, which gives sharper icons on Stream Deck's keys
+        // to compare, you can set this value to 1 (or look at the double-indicator-plugin example, which uses scale 1)
         this.scale = 2;
         this.iconSize = 48 * this.scale; // default size of the icon is 48
         this.color = '#EFEFEF';
