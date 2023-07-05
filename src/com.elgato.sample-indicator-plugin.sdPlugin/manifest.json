@@ -38,7 +38,7 @@
     "Name": "Sample Indicator",
     "Icon": "pluginIcon",
     "URL": "https://www.elgato.com/gaming/stream-deck",
-    "Version": "0.1.0.04",
+    "Version": "0.1.0.05",
     "OS": [
         {
             "Platform": "mac",
